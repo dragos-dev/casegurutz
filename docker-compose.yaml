@@ -1,0 +1,31 @@
+version: '3.6'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    volumes:
+      - ./:/srv/app
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_HOST: "mysql"
+    ports:
+      - "3000:3000"
+
+  mysql:
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    command:
+      - --table_definition_cache=100
+      - --performance_schema=0
+      - --default-authentication-plugin=mysql_native_password
+      - --innodb_use_native_aio=0
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    container_name: mysqldb
+    image: mysql
